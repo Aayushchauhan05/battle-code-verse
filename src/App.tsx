@@ -12,15 +12,17 @@ import FindOpponent from "./pages/FindOpponent";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import NotFound from "./pages/NotFound";
-
+import {AuthProvider} from "./contexts/AuthContext"
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
+    
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
+      <AuthProvider>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/battles" element={<Battle />} />
@@ -32,8 +34,10 @@ const App = () => (
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
+    
   </QueryClientProvider>
 );
 

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -10,16 +9,10 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
+import { useAuth } from '@/contexts/AuthContext';
 
 const Navbar = () => {
-  // Mock user data - in a real app, this would come from authentication
-  const isLoggedIn = false;
-  const user = {
-    name: "CodeMaster",
-    avatar: "/placeholder.svg",
-    rating: 1250,
-    rank: "Silver",
-  };
+  const { user, isLoading, logout } = useAuth();
 
   return (
     <nav className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
@@ -44,45 +37,57 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-3">
-          {isLoggedIn ? (
+          {!isLoading && (
             <>
-              <Button variant="outline" size="sm" className="hidden md:flex items-center gap-2">
-                <Trophy className="h-4 w-4 text-codeverse-blue" />
-                <span>{user.rating} ELO</span>
-              </Button>
-              
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="p-1 h-auto">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={user.avatar} />
-                      <AvatarFallback className="bg-codeverse-purple text-white">
-                        {user.name.substring(0, 2)}
-                      </AvatarFallback>
-                    </Avatar>
+              {user ? (
+                <>
+                  <Button variant="outline" size="sm" className="hidden md:flex items-center gap-2">
+                    <Trophy className="h-4 w-4 text-codeverse-blue" />
+                    <span>{user.rating || 1000} ELO</span>
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem>Profile</DropdownMenuItem>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
-                  <DropdownMenuItem>Logout</DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </>
-          ) : (
-            <>
-              <Button variant="ghost" size="sm" asChild>
-                <Link to="/login">Login</Link>
-              </Button>
-              <Button size="sm" className="bg-codeverse-purple hover:bg-codeverse-purple/90" asChild>
-                <Link to="/register">Register</Link>
-              </Button>
+                  
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="p-1 h-auto">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={user.avatar} />
+                          <AvatarFallback className="bg-codeverse-purple text-white">
+                            {user.username?.substring(0, 2) || 'US'}
+                          </AvatarFallback>
+                        </Avatar>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem asChild>
+                        <Link to="/profile">Profile</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to="/settings">Settings</Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={logout}>
+                        Logout
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </>
+              ) : (
+                <>
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link to="/login">Login</Link>
+                  </Button>
+                  <Button size="sm" className="bg-codeverse-purple hover:bg-codeverse-purple/90" asChild>
+                    <Link to="/register">Register</Link>
+                  </Button>
+                </>
+              )}
             </>
           )}
           
-          <Button variant="outline" size="sm" className="gap-2 neon-border animate-pulse-glow">
-            <Sword className="h-4 w-4" />
-            <span>Battle Now</span>
+          <Button variant="outline" size="sm" className="gap-2 neon-border animate-pulse-glow" asChild>
+            <Link to={user ? "/find-opponent" : "/login"}>
+              <Sword className="h-4 w-4" />
+              <span>Battle Now</span>
+            </Link>
           </Button>
         </div>
       </div>
