@@ -57,11 +57,11 @@ const FindOpponent = () => {
         console.error('API Error - Using dummy data:', error);
         setOpponents(dummyOpponents);
         setUsingDummyData(true);
-        toast({
-          title: 'Notice',
-          description: 'Using demo data. Real opponents will appear when API is available.',
-          variant: 'default'
-        });
+        // toast({
+        //   title: 'Notice',
+        //   description: 'Using demo data. Real opponents will appear when API is available.',
+        //   variant: 'default'
+        // });
       } finally {
         setIsLoading(false);
       }
@@ -337,7 +337,7 @@ const FindOpponent = () => {
                 {usingDummyData && (
                   <div className="mb-4 p-4 bg-yellow-900/20 rounded-lg border border-yellow-700/50">
                     <p className="text-yellow-400 text-sm">
-                      ⚠️ Currently showing demo data. Real opponents will appear when connected to the server.
+                      ⚠️opponents will appear when connected to the server.
                     </p>
                   </div>
                 )}
