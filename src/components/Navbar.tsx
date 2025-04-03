@@ -32,14 +32,14 @@ const Navbar = () => {
         </Link>
 
         <div className="hidden md:flex items-center gap-6">
-          <Link to="/battles" className="text-foreground/80 hover:text-foreground transition-colors">
+          <Link to="/find-opponent" className="text-foreground/80 hover:text-foreground transition-colors">
             Battles
           </Link>
           <Link to="/leaderboard" className="text-foreground/80 hover:text-foreground transition-colors">
             Leaderboard
           </Link>
-          <Link to="/practice" className="text-foreground/80 hover:text-foreground transition-colors">
-            Practice
+          <Link to="/dashboard" className="text-foreground/80 hover:text-foreground transition-colors">
+            Dashboard
           </Link>
         </div>
 
