@@ -25,10 +25,10 @@ const App = () => (
       <AuthProvider>
         <Routes>
           <Route path="/" element={<Index />} />
-          {/* <Route path="/battles" element={<Battle />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/battles" element={<Battle />} />
+          <Route path="/dashboard" element={<Dashboard />} />s
           <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/find-opponent" element={<FindOpponent />} /> */}
+          <Route path="/find-opponent" element={<FindOpponent />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

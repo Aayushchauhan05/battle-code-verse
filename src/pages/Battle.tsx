@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
@@ -11,29 +10,24 @@ import {
   Timer, 
   Code, 
   Check, 
-  X, 
-  ArrowUpRight, 
-  ArrowDownRight,
-  ChevronRight,
   Play,
   ClipboardCheck
 } from 'lucide-react';
 import CodeEditor from '@/components/CodeEditor';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 
 const Battle = () => {
-  const [timeLeft, setTimeLeft] = useState(300); // 5 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(300);
   const [submitting, setSubmitting] = useState(false);
   const [code, setCode] = useState("// Write your solution here\n\nfunction solve(input) {\n  // Your code here\n  \n  return result;\n}");
-  
-  // Mock battle data
+  const [score, setScore] = useState<number | null>(null);
+const [suggestions,setSuggestions]=useState<string>("")
   const battleData = {
     opponent: {
       name: "AlgorithmAce",
       avatar: "/placeholder.svg",
       rating: 1345,
-      progress: 65, // percent complete
+      progress: 65,
     },
     problem: {
       title: "Two Sum",
@@ -71,22 +65,53 @@ Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].`,
     return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   };
 
+  const fetchAiModel = async () => {
+    try {
+      setSubmitting(true);
+      const response = await fetch("http://localhost:8181/evaluate", {
+        method: "POST",
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          pseudocode: code,
+          question: battleData.problem
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const rawEval: string = data.evaluation || "";
+        const scoreMatch = rawEval.match(/^\d+/);
+        const extractedScore = scoreMatch ? parseInt(scoreMatch[0]) : null;
+        setScore(extractedScore);
+        setSuggestions(data.evaluation)
+        setSubmitting(false);
+        
+      } else {
+        console.error("Server error:", response.status);
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+    }
+  };
+
   const handleSubmit = () => {
     setSubmitting(true);
-    
-    // Simulate submission process
+    setScore(null);
+
     setTimeout(() => {
       setSubmitting(false);
-      // Here you would normally handle the actual submission process
+      fetchAiModel();
     }, 2000);
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-codeverse-dark grid-pattern">
       <Navbar />
-      
+
       <div className="container py-6 flex-1 flex flex-col">
-        {/* Battle header with timer and opponent info */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
             <Card className="p-2 border border-codeverse-pink/30">
@@ -95,20 +120,18 @@ Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].`,
                 <span className="text-codeverse-pink">{formatTime(timeLeft)}</span>
               </div>
             </Card>
-            
+
             <h1 className="text-2xl font-bold">{battleData.problem.title}</h1>
-            
-            <Badge 
-              className={`
-                ${battleData.problem.difficulty === 'Easy' ? 'bg-codeverse-green' : 
-                battleData.problem.difficulty === 'Medium' ? 'bg-codeverse-blue' : 
+
+            <Badge className={
+              `${battleData.problem.difficulty === 'Easy' ? 'bg-codeverse-green' :
+                battleData.problem.difficulty === 'Medium' ? 'bg-codeverse-blue' :
                 'bg-codeverse-pink'} text-white`
-              }
-            >
+            }>
               {battleData.problem.difficulty}
             </Badge>
           </div>
-          
+
           <Card className="w-full md:w-auto border border-codeverse-blue/30 bg-card/80">
             <CardContent className="p-4 flex items-center justify-between gap-8">
               <div className="flex items-center gap-3">
@@ -123,7 +146,7 @@ Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].`,
                   <p className="text-xs text-muted-foreground">{battleData.opponent.rating} ELO</p>
                 </div>
               </div>
-              
+
               <div className="w-40">
                 <p className="text-xs text-muted-foreground mb-1">Opponent Progress</p>
                 <Progress value={battleData.opponent.progress} className="h-2" />
@@ -131,10 +154,8 @@ Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].`,
             </CardContent>
           </Card>
         </div>
-        
-        {/* Main battle area: problem and code editor */}
+
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 flex-1">
-          {/* Problem description */}
           <Card className="lg:col-span-2 border-border overflow-auto max-h-[calc(100vh-300px)] lg:max-h-none">
             <CardHeader className="border-b border-border">
               <CardTitle>Problem Description</CardTitle>
@@ -142,29 +163,28 @@ Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].`,
             <CardContent className="p-4">
               <div className="prose prose-invert max-w-none">
                 <p className="whitespace-pre-line mb-6">{battleData.problem.description}</p>
-                
+
                 <h3 className="text-lg font-semibold mb-2">Constraints:</h3>
                 <ul className="list-disc list-inside space-y-1 mb-6">
-                  {battleData.problem.constraints.map((constraint, i) => (
-                    <li key={i} className="text-muted-foreground">{constraint}</li>
+                  {battleData.problem.constraints.map((c, i) => (
+                    <li key={i} className="text-muted-foreground">{c}</li>
                   ))}
                 </ul>
-                
+
                 <h3 className="text-lg font-semibold mb-2">Examples:</h3>
-                {battleData.problem.examples.map((example, i) => (
+                {battleData.problem.examples.map((ex, i) => (
                   <div key={i} className="mb-4 last:mb-0">
                     <p className="text-sm font-semibold text-muted-foreground mb-1">Example {i + 1}:</p>
                     <div className="bg-card/50 rounded-md p-3 mb-2">
-                      <p className="text-sm font-mono mb-1"><span className="text-codeverse-blue">Input:</span> {example.input}</p>
-                      <p className="text-sm font-mono"><span className="text-codeverse-green">Output:</span> {example.output}</p>
+                      <p className="text-sm font-mono mb-1"><span className="text-codeverse-blue">Input:</span> {ex.input}</p>
+                      <p className="text-sm font-mono"><span className="text-codeverse-green">Output:</span> {ex.output}</p>
                     </div>
                   </div>
                 ))}
               </div>
             </CardContent>
           </Card>
-          
-          {/* Code editor area */}
+
           <Card className="lg:col-span-3 border-border flex flex-col overflow-hidden">
             <CardHeader className="border-b border-border py-3 px-4">
               <Tabs defaultValue="code">
@@ -180,6 +200,7 @@ Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].`,
                 </TabsList>
               </Tabs>
             </CardHeader>
+
             <CardContent className="p-0 flex-1 flex flex-col">
               <div className="flex-1 min-h-[400px]">
                 <CodeEditor
@@ -188,48 +209,56 @@ Explanation: Because nums[0] + nums[1] == 9, we return [0, 1].`,
                   language="javascript"
                 />
               </div>
-              
-              <div className="border-t border-border p-3 flex items-center justify-between">
-                <div className="flex gap-2">
-                  <Button variant="outline" size="sm" className="gap-2">
+
+              <div className="border-t border-border p-3 flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <Button variant="outline" size="sm" className="gap-2" onClick={handleSubmit}
+                    disabled={submitting}>
                     <Play className="h-4 w-4" />
                     Test
                   </Button>
+
+                  <Button 
+                    onClick={handleSubmit}
+                    disabled={submitting}
+                    className="gap-2 bg-codeverse-green hover:bg-codeverse-green/90"
+                  >
+                    {submitting ? (
+                      <>
+                        <span className="animate-spin">
+                          <svg 
+                            className="h-4 w-4" 
+                            xmlns="http://www.w3.org/2000/svg" 
+                            fill="none" 
+                            viewBox="0 0 24 24"
+                          >
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                          </svg>
+                        </span>
+                        <span>Submitting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Check className="h-4 w-4" />
+                        <span>Submit Solution</span>
+                      </>
+                    )}
+                  </Button>
                 </div>
-                
-                <Button 
-                  onClick={handleSubmit}
-                  disabled={submitting}
-                  className="gap-2 bg-codeverse-green hover:bg-codeverse-green/90"
-                >
-                  {submitting ? (
-                    <>
-                      <span className="animate-spin">
-                        <svg 
-                          className="h-4 w-4" 
-                          xmlns="http://www.w3.org/2000/svg" 
-                          fill="none" 
-                          viewBox="0 0 24 24"
-                        >
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                        </svg>
-                      </span>
-                      <span>Submitting...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Check className="h-4 w-4" />
-                      <span>Submit Solution</span>
-                    </>
-                  )}
-                </Button>
+
+                {score !== null && (
+                <>  <p className="text-sm text-codeverse-blue font-semibold">
+                    Evaluation Score: {score}/20
+                  </p>
+                  <p>{suggestions.trim().split(" ").slice(1).join(" ")}</p></>
+                )}
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
-      
+
       <Footer />
     </div>
   );
