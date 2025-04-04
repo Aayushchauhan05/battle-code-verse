@@ -9,8 +9,17 @@ import { Checkbox } from '@/components/ui/checkbox';
 import axios from '@/axios/axios';
 import { useToast } from '@/hooks/use-toast';
 
+interface RegisterFormData {
+  firstName: string;
+  lastName: string;
+  username: string;
+  email: string;
+  password: string;
+  agreeTerms: boolean;
+}
+
 const Register = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<RegisterFormData>({
     firstName: '',
     lastName: '',
     username: '',
@@ -22,7 +31,7 @@ const Register = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -30,7 +39,14 @@ const Register = () => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleCheckboxChange = (checked: boolean) => {
+    setFormData(prev => ({
+      ...prev,
+      agreeTerms: checked
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.agreeTerms) {
@@ -147,9 +163,7 @@ const Register = () => {
               <Checkbox 
                 id="agreeTerms" 
                 checked={formData.agreeTerms}
-                onCheckedChange={(checked) => 
-                  setFormData(prev => ({ ...prev, agreeTerms: checked }))
-                }
+                onCheckedChange={handleCheckboxChange}
               />
               <label
                 htmlFor="agreeTerms"
