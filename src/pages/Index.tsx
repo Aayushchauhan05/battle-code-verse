@@ -35,8 +35,8 @@ const Index = () => {
           </Badge>
           
           <h1 className="text-4xl md:text-6xl font-bold mb-6 glow-text">
-            <span className="gradient-text">1v1 Coding Battles</span> with<br />
-            Real-time AI Evaluation
+            <span className="gradient-text">1v1 Coding Battles</span> <br />With
+            Real-Time AI Evaluation
           </h1>
           
           <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
