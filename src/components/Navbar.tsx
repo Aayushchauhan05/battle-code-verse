@@ -34,7 +34,7 @@ const Navbar = () => {
           <Link to="/dashboard" className="text-foreground/80 hover:text-foreground transition-colors">
             Dashboard
           </Link>
-          <a href="https://agent.ai/agent/Antares" className=" underline text-lg text-foreground/80 hover:text-foreground transition-colors">Agent.ai</a>
+          {/* <a href="https://agent.ai/agent/Antares" className=" underline text-lg text-foreground/80 hover:text-foreground transition-colors">Agent.ai</a> */}
         </div>
 
         <div className="flex items-center gap-3">
