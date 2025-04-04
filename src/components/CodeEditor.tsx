@@ -8,7 +8,7 @@ interface CodeEditorProps {
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = ({ value, onChange, language = 'javascript' }) => {
-  // In a real implementation, we would use a proper code editor like Monaco or CodeMirror
+  
   return (
     <div className="w-full h-full">
       <textarea
