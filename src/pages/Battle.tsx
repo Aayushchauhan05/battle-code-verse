@@ -89,7 +89,11 @@ const Battle = () => {
       } catch (error) {
         console.error('Code execution error:', error);
       }
-
+console.log({
+  pseudocode: code,
+  question: battleData.problem,
+  testResults: testResults.filter(t => !t.passed)
+})
       // Then send to AI for evaluation
       const response = await fetch("http://localhost:8181/evaluate", {
         method: "POST",
